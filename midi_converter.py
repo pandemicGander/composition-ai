@@ -1,6 +1,7 @@
 from music21 import converter, note, stream, midi, chord
 from itertools import zip_longest
 
+
 def midi_to_custom_format(midi_file_path, harmonyValue=6):
   # Load the MIDI file
   midi_stream = converter.parse(midi_file_path)
@@ -9,7 +10,6 @@ def midi_to_custom_format(midi_file_path, harmonyValue=6):
   notes = []
 
   for midiData in midi_stream.flat.notesAndRests:
-
 
     if isinstance(midiData, chord.Chord):
       for n in midiData:
@@ -20,9 +20,10 @@ def midi_to_custom_format(midi_file_path, harmonyValue=6):
     if isinstance(midiData, note.Note):
       process(expectedOffset, futureNotesToMerge, midiData, notes)
 
-  merged_notes = [a + b for a, b in zip_longest(futureNotesToMerge, notes, fillvalue=[])]
-  sorted_data = [sorted(sublist, key=lambda x: x['pitch']) for sublist in merged_notes]
-
+  merged_notes = [a + b for a, b in
+                  zip_longest(futureNotesToMerge, notes, fillvalue=[])]
+  sorted_data = [sorted(sublist, key=lambda x: x['pitch']) for sublist in
+                 merged_notes]
 
   to_append_template = {'pitch': 0, 'velocity': 0}  # Template without offset
 
@@ -39,7 +40,8 @@ def midi_to_custom_format(midi_file_path, harmonyValue=6):
       # Calculate how many items need to be appended
       append_count = harmonyValue - len(sublist)
       # Create the items to be appended
-      items_to_append = [{'offset': idx, **to_append_template} for _ in range(append_count)]
+      items_to_append = [{'offset': idx, **to_append_template} for _ in
+                         range(append_count)]
       # Append the items to the sublist
       extended_sublist = sublist + items_to_append
       result.append(extended_sublist)
@@ -50,6 +52,8 @@ def midi_to_custom_format(midi_file_path, harmonyValue=6):
 
   return result
 
+def extractPitchesForAIFormat(data):
+  return [[note['pitch'] for note in sublist] for sublist in data]
 
 def process(expectedOffset, futureNotesToMerge, n, notes):
   while (getIndexFromOffset(n.offset) != expectedOffset):
@@ -74,6 +78,7 @@ def process(expectedOffset, futureNotesToMerge, n, notes):
 def does_element_exist(lst, index):
   return index < len(lst)
 
+
 def append_to_nth_element(n, notes, value):
   if value is None:
     notes.append([])
@@ -88,7 +93,9 @@ def append_to_nth_element(n, notes, value):
 
 def getIndexFromOffset(offset):
   return int(offset * 4)
+
+
 # Usage
 midi_file_path = 'simple_midi.mid'
 formatted_data = midi_to_custom_format(midi_file_path)
-print(formatted_data)
+print(extractPitchesForAIFormat(formatted_data))
