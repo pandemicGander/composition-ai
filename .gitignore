@@ -2,3 +2,4 @@
 *.iml
 venv
 my_lstm_model.h5
+output_midi.mid
