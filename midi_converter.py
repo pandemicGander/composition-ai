@@ -96,6 +96,6 @@ def getIndexFromOffset(offset):
 
 
 # Usage
-midi_file_path = 'simple_midi.mid'
+midi_file_path = 'tester2.mid'
 formatted_data = midi_to_custom_format(midi_file_path)
 print(extractPitchesForAIFormat(formatted_data))
