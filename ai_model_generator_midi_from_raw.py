@@ -1,5 +1,5 @@
 import numpy as np
-from tensorflow.keras.models import Sequential, load_model
+from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
 import json
 
@@ -14,10 +14,13 @@ with open(file_path, 'r') as file:
 # Define the maximum pitch value for normalization
 max_pitch = 127
 
+# Convert 0s to -127 in sequences
+sequences = [[-127 if pitch == 0 else pitch for pitch in sequence] for sequence in sequences]
+
 # Preparing the data
 X = []
 y = []
-sequence_length = 5  # Number of time steps in each input sequence
+sequence_length = 8  # Number of time steps in each input sequence
 
 # Normalize the sequences and prepare input (X) and output (y)
 for i in range(len(sequences) - sequence_length):
@@ -39,7 +42,7 @@ model = Sequential([
 model.compile(optimizer='adam', loss='mse')
 
 # Training the model
-model.fit(X, y, epochs=1000, verbose=1)
+model.fit(X, y, epochs=100, verbose=1)
 
 # Saving the model
 model.save('my_lstm_model_midi.h5')
