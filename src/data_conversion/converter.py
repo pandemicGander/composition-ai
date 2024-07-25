@@ -1,6 +1,8 @@
 from music21 import converter, note, stream, midi, chord
 from itertools import zip_longest
 
+from src.utils.helpers import does_element_exist, append_to_nth_element
+
 
 def midi_to_custom_format(midi_file_path, harmonyValue=6):
   # Load the MIDI file
@@ -74,28 +76,11 @@ def process(expectedOffset, futureNotesToMerge, n, notes):
                              "velocity": n.volume.velocity,
                              "offset:": expectedOffset + i})
 
-
-def does_element_exist(lst, index):
-  return index < len(lst)
-
-
-def append_to_nth_element(n, notes, value):
-  if value is None:
-    notes.append([])
-    return
-  # Ensure that there are enough elements in notes
-  while len(notes) <= n:
-    notes.append([])  # Append an empty list if the index does not exist
-
-  # Now that we're sure notes[n] exists, append the value to it
-  notes[n].append(value)
-
-
 def getIndexFromOffset(offset):
   return int(offset * 4)
 
 
 # Usage
-midi_file_path = 'simple_midi.mid'
+midi_file_path = 'tester2.mid'
 formatted_data = midi_to_custom_format(midi_file_path)
 print(extractPitchesForAIFormat(formatted_data))
