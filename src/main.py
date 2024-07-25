@@ -24,6 +24,6 @@ def process_all_midi_files(raw_folder, processed_folder):
       print(f"Processed {file_name} and saved to {processed_file_path}")
 
 if __name__ == '__main__':
-  raw_folder = 'data/raw'
-  processed_folder = 'data/processed'
+  raw_folder = 'data/raw_midi'
+  processed_folder = 'data/processed_midi'
   process_all_midi_files(raw_folder, processed_folder)
