@@ -2,5 +2,3 @@
 *.iml
 venv
 *.h5
-output_midi.mid
-*.mid
