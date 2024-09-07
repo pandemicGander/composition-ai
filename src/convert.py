@@ -42,6 +42,11 @@ def reconstruct_midi_files(processed_folder, reconstructed_folder):
 
       print(f"Reconstructed MIDI saved to {reconstructed_file_path}")
 
+#TODO need a format that also looks like this:
+# takes out the rhythm and just leaves the distinct notes
+# these rhythms are then saved in a separate format which can apply back to the notes (can also be trained on their own)
+# take the octaves so we have a separate voicing model
+
 if __name__ == '__main__':
   raw_folder = 'data/raw_midi'
   ai_format_folder = 'data/ai_format'
