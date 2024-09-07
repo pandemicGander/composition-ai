@@ -42,15 +42,37 @@ def reconstruct_midi_files(processed_folder, reconstructed_folder):
 
       print(f"Reconstructed MIDI saved to {reconstructed_file_path}")
 
-#TODO need a format that also looks like this:
-# takes out the rhythm and just leaves the distinct notes
-# these rhythms are then saved in a separate format which can apply back to the notes (can also be trained on their own)
-# take the octaves so we have a separate voicing model
+def reconstruct_from_predictions(predictions_folder, reconstructed_folder):
+  # Check if reconstructed folder exists, create if not
+  if not os.path.exists(reconstructed_folder):
+    os.makedirs(reconstructed_folder)
+
+  # Iterate through all files in the predictions folder
+  for file_name in os.listdir(predictions_folder):
+    if file_name.endswith('.txt'):
+      prediction_file_path = os.path.join(predictions_folder, file_name)
+      reconstructed_file_path = os.path.join(reconstructed_folder, file_name.replace('.txt', '_predicted.mid'))
+
+      # Load predicted data
+      with open(prediction_file_path, 'r') as f:
+        pitch_data = [list(map(int, line.strip().split(','))) for line in f]
+
+      # Reconstruct the MIDI file from the predicted pitch data
+      ai_format_to_midi(pitch_data, reconstructed_file_path)
+
+      print(f"Reconstructed MIDI from predictions saved to {reconstructed_file_path}")
 
 if __name__ == '__main__':
   raw_folder = 'data/raw_midi'
   ai_format_folder = 'data/ai_format'
   reconstructed_folder = 'data/reconstructed_midi'
+  predictions_folder = 'data/predictions'
 
   process_midi_files(raw_folder, ai_format_folder)
   reconstruct_midi_files(ai_format_folder, reconstructed_folder)
+  reconstruct_from_predictions(predictions_folder, reconstructed_folder)
+
+# TODO: Implement the following format changes:
+# 1. Extract rhythm and save it separately
+# 2. Leave only distinct notes without rhythm
+# 3. Extract octaves for a separate voicing model
