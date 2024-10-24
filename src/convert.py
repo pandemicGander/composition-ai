@@ -2,11 +2,9 @@ import os
 from data_conversion.converter import midi_to_ai_format, ai_format_to_midi
 
 def process_midi_files(raw_folder, processed_folder):
-  # Check if processed folder exists, create if not
   if not os.path.exists(processed_folder):
     os.makedirs(processed_folder)
 
-  # Iterate through all files in the raw folder
   for file_name in os.listdir(raw_folder):
     if file_name.endswith('.mid') or file_name.endswith('.midi'):
       raw_file_path = os.path.join(raw_folder, file_name)
@@ -17,17 +15,15 @@ def process_midi_files(raw_folder, processed_folder):
 
       # Save the processed data
       with open(processed_file_path, 'w') as f:
-        for line in formatted_data:
-          f.write(f"{','.join(map(str, line))}\n")
+        for vector in formatted_data:
+          f.write(','.join(map(str, vector)) + '\n')
 
       print(f"Processed {file_name} and saved to {processed_file_path}")
 
 def reconstruct_midi_files(processed_folder, reconstructed_folder):
-  # Check if reconstructed folder exists, create if not
   if not os.path.exists(reconstructed_folder):
     os.makedirs(reconstructed_folder)
 
-  # Iterate through all files in the processed folder
   for file_name in os.listdir(processed_folder):
     if file_name.endswith('_processed.txt'):
       processed_file_path = os.path.join(processed_folder, file_name)
@@ -43,11 +39,9 @@ def reconstruct_midi_files(processed_folder, reconstructed_folder):
       print(f"Reconstructed MIDI saved to {reconstructed_file_path}")
 
 def reconstruct_from_predictions(predictions_folder, reconstructed_folder):
-  # Check if reconstructed folder exists, create if not
   if not os.path.exists(reconstructed_folder):
     os.makedirs(reconstructed_folder)
 
-  # Iterate through all files in the predictions folder
   for file_name in os.listdir(predictions_folder):
     if file_name.endswith('.txt'):
       prediction_file_path = os.path.join(predictions_folder, file_name)
@@ -71,8 +65,3 @@ if __name__ == '__main__':
   process_midi_files(raw_folder, ai_format_folder)
   reconstruct_midi_files(ai_format_folder, reconstructed_folder)
   reconstruct_from_predictions(predictions_folder, reconstructed_folder)
-
-# TODO: Implement the following format changes:
-# 1. Extract rhythm and save it separately
-# 2. Leave only distinct notes without rhythm
-# 3. Extract octaves for a separate voicing model

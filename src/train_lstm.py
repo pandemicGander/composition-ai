@@ -5,7 +5,7 @@ from tensorflow.keras.layers import LSTM, Dense
 from tensorflow.keras.callbacks import ModelCheckpoint
 from sklearn.model_selection import train_test_split
 
-def load_data(file_path, seq_length=16):
+def load_data(file_path, seq_length=100):
     with open(file_path, 'r') as f:
         data = [list(map(int, line.strip().split(','))) for line in f]
 
@@ -18,22 +18,23 @@ def load_data(file_path, seq_length=16):
 
     return np.array(sequences), np.array(next_sequences)
 
-def build_lstm_model(input_shape, output_shape):
+def build_lstm_model(input_shape):
     model = Sequential([
         LSTM(128, input_shape=input_shape, return_sequences=True),
-        LSTM(64),
-        Dense(output_shape)
+        LSTM(64, return_sequences=True),
+        LSTM(32),
+        Dense(12, activation='sigmoid')
     ])
-    model.compile(optimizer='adam', loss='mse')
+    model.compile(optimizer='adam', loss='binary_crossentropy')
     return model
 
 def train_model(X, y, model_save_path):
     X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, shuffle=False)
 
     input_shape = (X_train.shape[1], X_train.shape[2])
-    output_shape = y_train.shape[1]
 
-    model = build_lstm_model(input_shape, output_shape)
+    model = build_lstm_model(input_shape)
+
     checkpoint_callback = ModelCheckpoint(model_save_path, save_best_only=True, monitor='val_loss')
 
     model.fit(X_train, y_train,
@@ -47,8 +48,8 @@ def train_model(X, y, model_save_path):
 
 def predict_next_sequence(model, input_sequence):
     input_sequence = np.expand_dims(input_sequence, axis=0)
-    prediction = model.predict(input_sequence)
-    return prediction[0].round().astype(int)
+    prediction = model.predict(input_sequence)[0]
+    return (prediction > 0.5).astype(int)
 
 if __name__ == '__main__':
     ai_format_folder = 'data/ai_format'
