@@ -1,5 +1,5 @@
 import os
-from data_conversion.converter import midi_to_ai_format, ai_format_to_midi
+from data_conversion.converter_voicing_harmony import midi_to_ai_format, ai_format_to_midi
 
 def process_midi_files(raw_folder, processed_folder):
   if not os.path.exists(processed_folder):

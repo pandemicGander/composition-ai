@@ -1,6 +1,6 @@
 import numpy as np
 from tensorflow.keras.models import load_model
-from train_lstm import predict_next_sequence
+from train_lstm_pure_harmony import predict_next_sequence
 
 def load_data(file_path):
   with open(file_path, 'r') as f:
@@ -8,7 +8,7 @@ def load_data(file_path):
   return np.array(data)
 
 if __name__ == '__main__':
-  model_path = 'models/lstm_model.h5'
+  model_path = 'models/lstm_pure_harmony_model.h5'
 
   # Load the trained model
   model = load_model(model_path)
