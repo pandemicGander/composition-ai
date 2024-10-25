@@ -9,4 +9,4 @@ To install the required Python libraries, run:
 pip install -r requirements.txt
 ```
 
-See [README.md](example_midi/README.md) for example usage.
+See [example_usage.md](example_midi/example_usage.md) for an example of how to use this project.
