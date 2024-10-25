@@ -26,11 +26,11 @@ def load_data(file_path, seq_length=100):
 def build_lstm_model(input_shape):
     model = Sequential([
         LSTM(128, input_shape=input_shape, return_sequences=True),
-    Dropout(0.2),
+        Dropout(0.2),
         LSTM(64, return_sequences=True),
-    Dropout(0.2),
+        Dropout(0.2),
         LSTM(32),
-        Dense(12, activation='sigmoid')
+        Dense(20, activation='sigmoid')
     ])
     model.compile(optimizer='adam', loss='binary_crossentropy')
     return model
@@ -66,7 +66,7 @@ def predict_next_sequence(model, input_sequence):
 
 if __name__ == '__main__':
     ai_format_folder = 'data/ai_format'
-    model_save_path = 'models/lstm_model.h5'
+    model_save_path = 'models/lstm_voicing_harmony_model.h5'
 
     all_sequences = []
     all_next_sequences = []
