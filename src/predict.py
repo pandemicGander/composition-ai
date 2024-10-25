@@ -20,7 +20,7 @@ if __name__ == '__main__':
 
   # Generate a sequence prediction
   full_sequence = input_data.copy()
-  num_predictions = 160
+  num_predictions = 16
 
   for i in range(num_predictions):
     # Get the last seq_length timesteps

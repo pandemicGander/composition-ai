@@ -4,6 +4,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
 from tensorflow.keras.callbacks import ModelCheckpoint
 from sklearn.model_selection import train_test_split
+from tensorflow.keras.layers import Dropout
 
 def load_data(file_path, seq_length=100):
     with open(file_path, 'r') as f:
@@ -12,16 +13,22 @@ def load_data(file_path, seq_length=100):
     sequences = []
     next_sequences = []
 
+    # Ensure that we have enough data to create at least one sequence
+    if len(data) <= seq_length:
+        return sequences, next_sequences
+
     for i in range(len(data) - seq_length):
         sequences.append(data[i:i + seq_length])
         next_sequences.append(data[i + seq_length])
 
-    return np.array(sequences), np.array(next_sequences)
+    return sequences, next_sequences
 
 def build_lstm_model(input_shape):
     model = Sequential([
         LSTM(128, input_shape=input_shape, return_sequences=True),
+    Dropout(0.2),
         LSTM(64, return_sequences=True),
+    Dropout(0.2),
         LSTM(32),
         Dense(12, activation='sigmoid')
     ])
@@ -29,6 +36,12 @@ def build_lstm_model(input_shape):
     return model
 
 def train_model(X, y, model_save_path):
+    # Shuffle the dataset before splitting
+    indices = np.arange(len(X))
+    np.random.shuffle(indices)
+    X = X[indices]
+    y = y[indices]
+
     X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, shuffle=False)
 
     input_shape = (X_train.shape[1], X_train.shape[2])
@@ -61,10 +74,11 @@ if __name__ == '__main__':
     for file_name in os.listdir(ai_format_folder):
         if file_name.endswith('_processed.txt'):
             file_path = os.path.join(ai_format_folder, file_name)
-            sequences, next_sequences = load_data(file_path)
+            sequences, next_sequences = load_data(file_path, seq_length=100)
             all_sequences.extend(sequences)
             all_next_sequences.extend(next_sequences)
 
+    # Convert lists to numpy arrays
     X = np.array(all_sequences)
     y = np.array(all_next_sequences)
 
