@@ -7,5 +7,6 @@ This project involves converting MIDI files to a custom AI format and training a
 To install the required Python libraries, run:
 ```bash
 pip install -r requirements.txt
+```
 
 See [README.md](example_midi/README.md) for example usage.
