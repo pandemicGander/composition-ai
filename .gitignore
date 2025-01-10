@@ -3,3 +3,4 @@
 venv
 *.h5
 prompt.txt
+*.DS_Store

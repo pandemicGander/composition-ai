@@ -4,7 +4,7 @@
 > prompt.txt
 
 # Append the tree structure excluding certain directories
-tree -I .idea -I venv >> prompt.txt 2>/dev/null
+tree -I .idea -I venv -I midi_bucket >> prompt.txt 2>/dev/null
 
 # Find and process Python files in the `src` folder, excluding __init__.py
 find src -type f -name "*.py" ! -name "__init__.py" | while read -r file; do
