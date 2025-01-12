@@ -29,7 +29,7 @@ def build_lstm_model(input_shape):
         LSTM(64, return_sequences=True),
         Dropout(0.2),
         LSTM(32),
-        Dense(96, activation='sigmoid')
+        Dense(108, activation='sigmoid')
     ])
     model.compile(optimizer='adam', loss='binary_crossentropy')
     return model
