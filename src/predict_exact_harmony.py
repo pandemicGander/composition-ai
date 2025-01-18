@@ -8,7 +8,7 @@ def load_data(file_path):
   return np.array(data)
 
 if __name__ == '__main__':
-  model_path = 'models/lstm_exact_harmony_model.h5'
+  model_path = 'models/lstm_exact_harmony_model.keras'
 
   # Load the trained model
   model = load_model(model_path)

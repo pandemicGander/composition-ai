@@ -1,6 +1,7 @@
 .idea
 *.iml
 venv
-*.h5
+*.keras
 prompt.txt
 *.DS_Store
+**/__pycache__/

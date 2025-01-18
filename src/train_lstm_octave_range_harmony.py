@@ -66,7 +66,7 @@ def predict_next_sequence(model, input_sequence):
 
 if __name__ == '__main__':
     ai_format_folder = 'data/ai_format'
-    model_save_path = 'models/lstm_octave_range_harmony_model.h5'
+    model_save_path = 'models/lstm_octave_range_harmony_model.keras'
 
     all_sequences = []
     all_next_sequences = []
