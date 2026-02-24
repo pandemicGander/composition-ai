@@ -17,20 +17,22 @@ python src/gpu_checker.py                # Check GPU availability
 
 ## Pipeline Workflow
 
-The project is a four-stage pipeline, each run as a standalone script from the repo root:
+The project is a four-stage pipeline. All scripts use `__file__`-relative paths, so they can be run from any working directory:
 
-1. **Convert MIDI → AI format**: `python src/convert_<variant>.py` (reads `src/data/raw_midi/`, writes `src/data/ai_format/`)
-2. **Train LSTM**: `python src/train_lstm_<variant>.py` (reads `src/data/ai_format/`, saves model to `models/`)
-3. **Predict/Generate**: `python src/predict_<variant>.py` (loads model, reads `src/data/example_input/`, writes `src/data/predictions/`)
+1. **Convert MIDI → AI format**: `python src/convert_<variant>.py` (reads `src/data/raw_midi/`, writes `src/data/ai_format/<variant>/`)
+2. **Train LSTM**: `python src/train_lstm_<variant>.py` (reads `src/data/ai_format/<variant>/`, saves model to `models/`)
+3. **Predict/Generate**: `python src/predict_<variant>.py` (loads model, reads `src/data/example_input/example_<variant>.txt`, writes `src/data/predictions/<variant>/`)
 4. **Reconstruct MIDI**: Run the same convert script again to convert predictions back to MIDI (writes `src/data/reconstructed_midi/`)
 
 Replace `<variant>` with one of: `pure_harmony`, `octave_range_harmony`, `exact_harmony`.
+
+Each variant uses its own subdirectories for ai_format and predictions to prevent cross-variant data contamination.
 
 ## Architecture
 
 ### Three Encoding Variants
 
-Each variant has its own converter, training script, and prediction script:
+Each variant has its own converter, training script, prediction script, and example input:
 
 | Variant | Bits per timestep | What it encodes |
 |---|---|---|

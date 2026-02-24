@@ -1,10 +1,14 @@
 import os
+import math
+import random
 import numpy as np
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense, Dropout
 from tensorflow.keras.callbacks import ModelCheckpoint
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Optional: Set memory growth for GPU so TF doesn't grab all GPU memory up front.
 gpus = tf.config.list_physical_devices('GPU')
@@ -43,9 +47,12 @@ def data_generator(file_paths, seq_length=100, batch_size=32):
     """
     A generator that streams data from multiple files (songs).
     Yields (X_batch, y_batch) tuples indefinitely.
+    Shuffles file order each epoch for better training.
     """
     while True:  # Loop forever so Keras can train for multiple epochs
-        for file_path in file_paths:
+        shuffled_files = list(file_paths)
+        random.shuffle(shuffled_files)
+        for file_path in shuffled_files:
             seqs, next_seqs = load_data_from_file(file_path, seq_length)
 
             # If the file doesn't have enough data, skip
@@ -91,7 +98,7 @@ def build_lstm_model(input_shape):
         LSTM(64, return_sequences=True),
         Dropout(0.2),
         LSTM(32),
-        Dense(108, activation='sigmoid')  # 108 outputs, as in your original code
+        Dense(108, activation='sigmoid')  # 108 outputs for exact harmony
     ])
     model.compile(optimizer='adam', loss='binary_crossentropy')
     return model
@@ -113,8 +120,10 @@ if __name__ == '__main__':
     batch_size = 32
     epochs = 50
 
-    ai_format_folder = 'data/ai_format'
-    model_save_path = 'models/lstm_exact_harmony_model.keras'  # Adjust path if desired
+    ai_format_folder = os.path.join(SCRIPT_DIR, 'data', 'ai_format', 'exact_harmony')
+    model_save_path = os.path.join(SCRIPT_DIR, '..', 'models', 'lstm_exact_harmony_model.keras')
+
+    os.makedirs(os.path.dirname(model_save_path), exist_ok=True)
 
     # 1. Gather all file paths
     all_file_paths = [
@@ -131,21 +140,14 @@ if __name__ == '__main__':
     total_val_sequences = count_total_sequences(val_files, seq_length)
 
     # 4. Calculate steps per epoch
-    steps_per_epoch = max(1, total_train_sequences // batch_size)
-    validation_steps = max(1, total_val_sequences // batch_size)
+    steps_per_epoch = max(1, math.ceil(total_train_sequences / batch_size))
+    validation_steps = max(1, math.ceil(total_val_sequences / batch_size))
 
     # 5. Create data generators for train and validation
     train_gen = data_generator(train_files, seq_length=seq_length, batch_size=batch_size)
     val_gen = data_generator(val_files, seq_length=seq_length, batch_size=batch_size)
 
     # 6. Build the model
-    #    We assume num_features = 108 for the output, but your input dimension
-    #    might still be something else (e.g., 20). For a real scenario, ensure
-    #    the first layer's input_shape matches your actual input dimension.
-    #    If each step has 108 features, set input_shape=(seq_length, 108).
-    #
-    #    If your data actually has fewer input features, adjust input_shape accordingly.
-    #    For this example, we'll assume input_shape=(seq_length, 108).
     model = build_lstm_model((seq_length, 108))
 
     # 7. Set up checkpoints

@@ -1,6 +1,8 @@
 import os
 from data_conversion.converter_octave_range_harmony import midi_to_ai_format, ai_format_to_midi
 
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
 def process_midi_files(raw_folder, processed_folder):
   if not os.path.exists(processed_folder):
     os.makedirs(processed_folder)
@@ -8,7 +10,8 @@ def process_midi_files(raw_folder, processed_folder):
   for file_name in os.listdir(raw_folder):
     if file_name.lower().endswith('.mid') or file_name.lower().endswith('.midi'):
       raw_file_path = os.path.join(raw_folder, file_name)
-      processed_file_path = os.path.join(processed_folder, file_name.replace('.mid', '_processed.txt').replace('.midi', '_processed.txt'))
+      base_name = os.path.splitext(file_name)[0]
+      processed_file_path = os.path.join(processed_folder, base_name + '_processed.txt')
 
       try:
         # Process MIDI file
@@ -75,10 +78,10 @@ def reconstruct_from_predictions(predictions_folder, reconstructed_folder):
 
 
 if __name__ == '__main__':
-  raw_folder = 'data/raw_midi'
-  ai_format_folder = 'data/ai_format'
-  reconstructed_folder = 'data/reconstructed_midi'
-  predictions_folder = 'data/predictions'
+  raw_folder = os.path.join(SCRIPT_DIR, 'data', 'raw_midi')
+  ai_format_folder = os.path.join(SCRIPT_DIR, 'data', 'ai_format', 'octave_range_harmony')
+  reconstructed_folder = os.path.join(SCRIPT_DIR, 'data', 'reconstructed_midi')
+  predictions_folder = os.path.join(SCRIPT_DIR, 'data', 'predictions', 'octave_range_harmony')
 
   process_midi_files(raw_folder, ai_format_folder)
   reconstruct_midi_files(ai_format_folder, reconstructed_folder)

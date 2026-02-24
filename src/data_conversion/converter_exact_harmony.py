@@ -1,3 +1,4 @@
+import math
 from music21 import stream, pitch, key, converter, note, chord, interval
 
 def midi_to_ai_format(midi_file_path):
@@ -10,12 +11,15 @@ def midi_to_ai_format(midi_file_path):
 
   # Determine the interval needed to transpose to C major or A minor
   if key_signature.mode == 'major':
-    transposition_interval = interval.Interval(key_signature.tonic, pitch.Pitch('C'))
+    target = pitch.Pitch('C')
   elif key_signature.mode == 'minor':
-    transposition_interval = interval.Interval(key_signature.tonic, pitch.Pitch('A'))
+    target = pitch.Pitch('A')
   else:
-    # Default to C major if mode is not recognized
-    transposition_interval = interval.Interval(key_signature.tonic, pitch.Pitch('C'))
+    target = pitch.Pitch('C')
+
+  # Compute semitone difference and normalize to ascending (0..11)
+  semitones = (target.pitchClass - key_signature.tonic.pitchClass) % 12
+  transposition_interval = interval.Interval(semitones)
 
   # Transpose the MIDI stream to C major or A minor
   transposed_stream = midi_stream.transpose(transposition_interval)
@@ -24,11 +28,17 @@ def midi_to_ai_format(midi_file_path):
   # Dictionary to store results
   result = {}
 
+  # Find the total number of beats to fill gaps from rests
+  max_beat = 0
+
   # Iterate over all notes and rests in the MIDI file
   for midiData in transposed_stream.flat.notesAndRests:
     # Calculate the beats this note/chord/rest spans
     beat_start = int(midiData.offset * 4)  # 4 subdivisions per quarter
-    beat_end = int((midiData.offset + midiData.duration.quarterLength) * 4)
+    beat_end = max(beat_start + 1, math.ceil((midiData.offset + midiData.duration.quarterLength) * 4))
+
+    if beat_end > max_beat:
+      max_beat = beat_end
 
     for beat in range(beat_start, beat_end):
       if beat not in result:
@@ -58,7 +68,10 @@ def midi_to_ai_format(midi_file_path):
           octave_index = 12 + pc * 8 + (octave - 1)
           result[beat][octave_index] = 1
 
-      # Handle rests — we do nothing (they remain zero)
+  # Fill in any gaps (rests) with zero vectors
+  for beat in range(max_beat):
+    if beat not in result:
+      result[beat] = [0] * 108
 
   # Create a list of time steps sorted by beat
   sequences = [result[beat] for beat in sorted(result.keys())]
